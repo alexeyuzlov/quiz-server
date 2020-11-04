@@ -2,7 +2,13 @@
 
 namespace App\Exceptions;
 
+use App\Response;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Throwable;
 
 class Handler extends ExceptionHandler
 {
@@ -25,6 +31,24 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
+    public function render($request, Throwable $e)
+    {
+        if ($e instanceof ValidationException) {
+            return $this->processValidation($e);
+        }
+
+        if ($e instanceof ModelNotFoundException || $e instanceof NotFoundHttpException) {
+            return $this->processNotFound($e);
+        }
+
+        if ($e instanceof MethodNotAllowedHttpException) {
+            return $this->processMethodNotAllowed($e);
+        }
+
+//        dd($e);
+        return parent::render($request, $e);
+    }
+
     /**
      * Register the exception handling callbacks for the application.
      *
@@ -33,5 +57,27 @@ class Handler extends ExceptionHandler
     public function register()
     {
         //
+    }
+
+    private function processNotFound(Throwable $e)
+    {
+        return Response::fail(null, 'Not found', 404);
+    }
+
+    private function processValidation(ValidationException $exception)
+    {
+        $data = array_merge(
+            $exception->validator->errors()->messages(),
+            [
+                '_form' => 'Invalid Form'
+            ]
+        );
+
+        return Response::fail($data, null, 400);
+    }
+
+    private function processMethodNotAllowed(MethodNotAllowedHttpException $e)
+    {
+        return Response::fail(null, 'Method not allowed', 405);
     }
 }
