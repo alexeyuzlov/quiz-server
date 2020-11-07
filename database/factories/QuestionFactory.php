@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\Question;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 class QuestionFactory extends Factory
 {
@@ -23,8 +22,7 @@ class QuestionFactory extends Factory
     public function definition()
     {
         return [
-            'question' => $this->faker->word,
-            'answer' => $this->faker->word,
+            'question' => $this->faker->word
         ];
     }
 }

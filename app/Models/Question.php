@@ -22,8 +22,22 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Question whereQuestion($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Question whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Answer[] $answers
+ * @property-read int|null $answers_count
  */
 class Question extends Model
 {
     use HasFactory;
+
+    public function answers()
+    {
+        return $this->hasMany('App\Models\Answer');
+    }
+
+    protected $guarded = [];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at'
+    ];
 }

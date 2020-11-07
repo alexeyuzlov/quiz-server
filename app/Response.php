@@ -2,9 +2,11 @@
 
 namespace App;
 
+use Illuminate\Http\JsonResponse;
+
 class Response
 {
-    public static function success($data = null, $message = null)
+    public static function success($data = null, $message = null): JsonResponse
     {
         return response()->json([
             'data' => $data,
@@ -13,7 +15,7 @@ class Response
         ], 200);
     }
 
-    public static function fail($data = null, $message = null, $status = 500)
+    public static function fail($data = null, $message = null, $status = 500): JsonResponse
     {
         return response()->json([
             'data' => $data,
@@ -22,4 +24,3 @@ class Response
         ], $status);
     }
 }
-

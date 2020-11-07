@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use App\Response;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
@@ -37,6 +38,10 @@ class Handler extends ExceptionHandler
             return $this->processValidation($e);
         }
 
+        if ($e instanceof AuthorizationException) {
+            return $this->processForbidden($e);
+        }
+
         if ($e instanceof ModelNotFoundException || $e instanceof NotFoundHttpException) {
             return $this->processNotFound($e);
         }
@@ -45,7 +50,7 @@ class Handler extends ExceptionHandler
             return $this->processMethodNotAllowed($e);
         }
 
-//        dd($e);
+        dd($e);
         return parent::render($request, $e);
     }
 
@@ -62,6 +67,11 @@ class Handler extends ExceptionHandler
     private function processNotFound(Throwable $e)
     {
         return Response::fail(null, 'Not found', 404);
+    }
+
+    private function processForbidden(Throwable $e)
+    {
+        return Response::fail(null, 'You are not allowed to perform this action', 403);
     }
 
     private function processValidation(ValidationException $exception)

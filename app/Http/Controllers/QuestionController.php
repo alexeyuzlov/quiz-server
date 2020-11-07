@@ -3,21 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\DataAccess\QuestionRepository;
+use App\Http\Requests\StoreQuestion;
 use App\Models\Question;
 use App\Response;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class QuestionController extends Controller
 {
-    // todo create QuestionRequest
-    protected $rules = [
-        'question' => 'required|max:255',
-        'answer' => 'required|max:255'
-    ];
-
     private $questions;
-
 
     public function __construct(QuestionRepository $questions)
     {
@@ -32,15 +25,13 @@ class QuestionController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param StoreQuestion $request
      * @return JsonResponse
      */
-    public function store(Request $request)
+    public function store(StoreQuestion $request)
     {
-        $request->validate($this->rules);
-
         return Response::success(
-            $this->questions->create($request),
+            $this->questions->create($request->validated()),
             'Question created'
         );
     }
@@ -59,16 +50,14 @@ class QuestionController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
+     * @param StoreQuestion $request
      * @param Question $question
      * @return JsonResponse
      */
-    public function update(Request $request, Question $question)
+    public function update(StoreQuestion $request, Question $question)
     {
-        $request->validate($this->rules);
-
         return Response::success(
-            $this->questions->edit($request, $question),
+            $this->questions->edit($request->validated(), $question),
             'Question updated'
         );
     }
