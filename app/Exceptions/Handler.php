@@ -4,11 +4,13 @@ namespace App\Exceptions;
 
 use App\Response;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -36,6 +38,10 @@ class Handler extends ExceptionHandler
     {
         if ($e instanceof ValidationException) {
             return $this->processValidation($e);
+        }
+
+        if ($e instanceof UnauthorizedHttpException || $e instanceof AuthenticationException) {
+            return $this->process401($e);
         }
 
         if ($e instanceof AuthorizationException) {
@@ -74,16 +80,14 @@ class Handler extends ExceptionHandler
         return Response::fail(null, 'You are not allowed to perform this action', 403);
     }
 
+    private function process401(Throwable $e)
+    {
+        return Response::fail(null, 'Not autorized', 401);
+    }
+
     private function processValidation(ValidationException $exception)
     {
-        $data = array_merge(
-            $exception->validator->errors()->messages(),
-            [
-                '_form' => 'Invalid Form'
-            ]
-        );
-
-        return Response::fail($data, null, 400);
+        return Response::fail($exception->validator->errors()->messages(), null, 400);
     }
 
     private function processMethodNotAllowed(MethodNotAllowedHttpException $e)
