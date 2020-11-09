@@ -4,11 +4,13 @@ namespace App\DataAccess;
 
 use App\Models\Answer;
 use App\Models\Question;
+use Illuminate\Support\Collection;
 
 class QuestionRepository
 {
     /**
-     * @return Question[]
+     * @param bool $withAnswers
+     * @return Question[]|\Illuminate\Database\Eloquent\Collection
      */
     public function getAll()
     {
@@ -18,6 +20,7 @@ class QuestionRepository
     public function find(Question $question): Question
     {
         $question->load('answers');
+        $question->answers->makeVisible('correct');
         return $question;
     }
 
@@ -39,9 +42,37 @@ class QuestionRepository
         // $this->removeAnswers($question);
     }
 
-    public function removeAnswers(Question $question) {
+    public function removeAnswers(Question $question)
+    {
         $question->load('answers');
         $question->answers()->delete();
+    }
+
+    public function checkAnswers(Collection $results) {
+        $errors = [];
+        foreach ($this->getAll() as $question) {
+            $result = $results->where('id', $question->id)->first();
+            if (!$result) {
+                $result = [
+                    'answerIds' => []
+                ];
+            }
+
+            $correctAnswerIds = $question->answers
+                ->makeVisible('correct')
+                ->where('correct', true)
+                ->pluck('id')
+                ->toArray();
+
+            if ($correctAnswerIds != $result['answerIds']) {
+                array_push($errors, [
+                    'id' => $question->id,
+                    'answerIds' => $correctAnswerIds
+                ]);
+            }
+        }
+
+        return $errors;
     }
 
     private function save($body, Question $question): Question
@@ -52,7 +83,7 @@ class QuestionRepository
         $this->saveAnswers($body, $question);
 
         $question->refresh();
-        return $question;
+        return $this->find($question);
     }
 
     private function saveAnswers($body, Question $question): void

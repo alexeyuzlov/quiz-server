@@ -44,7 +44,8 @@ class Answer extends Model
     protected $hidden = [
         'question_id',
         'created_at',
-        'updated_at'
+        'updated_at',
+        'correct'
     ];
 
     protected $casts = [

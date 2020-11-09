@@ -16,12 +16,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        User::factory(10)
+        User::factory(2)
             ->create();
 
-        Question::factory(10)
+        Question::factory(3)
             ->has(Answer::factory(1)->setCorrect())
-            ->has(Answer::factory(2))
+            ->has(Answer::factory(1))
             ->create();
     }
 }

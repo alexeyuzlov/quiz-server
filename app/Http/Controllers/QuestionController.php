@@ -10,6 +10,9 @@ use Illuminate\Http\JsonResponse;
 
 class QuestionController extends Controller
 {
+    /**
+     * @var QuestionRepository
+     */
     private $questions;
 
     public function __construct(QuestionRepository $questions)
