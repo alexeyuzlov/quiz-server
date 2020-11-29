@@ -5,6 +5,7 @@ namespace App\DataAccess;
 use App\Models\Answer;
 use App\Models\Question;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class QuestionRepository
 {
@@ -50,6 +51,7 @@ class QuestionRepository
 
     public function checkAnswers(Collection $results) {
         $errors = [];
+        DB::enableQueryLog();
         foreach ($this->getAll() as $question) {
             $result = $results->where('id', $question->id)->first();
             if (!$result) {
@@ -71,6 +73,9 @@ class QuestionRepository
                 ]);
             }
         }
+        $queries = DB::getQueryLog();
+
+        var_dump($queries);
 
         return $errors;
     }

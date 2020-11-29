@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\MailController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuizController;
 use Illuminate\Support\Facades\Route;
@@ -21,8 +23,12 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 });
 
 Route::group(['prefix' => 'public'], function () {
+    Route::post('mail/send', [MailController::class, 'send']);
     Route::post('login', [LoginController::class, 'login']);
 
     Route::get('quiz', [QuizController::class, 'index']);
     Route::post('quiz', [QuizController::class, 'check']);
+
+    Route::get('files', [FileController::class, 'index']);
+    Route::post('files', [FileController::class, 'store']);
 });
