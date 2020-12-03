@@ -4,8 +4,8 @@ namespace App\DataAccess;
 
 use App\Models\Answer;
 use App\Models\Question;
+use App\PagingModel;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 class QuestionRepository
 {
@@ -16,6 +16,16 @@ class QuestionRepository
     public function getAll()
     {
         return Question::all();
+    }
+
+    public function search(PagingModel $model)
+    {
+        $paginator = Question::paginate($model->pageSize, ['*'], 'page', $model->page);
+
+        return [
+            'data' => $paginator->items(),
+            'total' => $paginator->total()
+        ];
     }
 
     public function find(Question $question): Question
@@ -49,9 +59,9 @@ class QuestionRepository
         $question->answers()->delete();
     }
 
-    public function checkAnswers(Collection $results) {
+    public function checkAnswers(Collection $results)
+    {
         $errors = [];
-        DB::enableQueryLog();
         foreach ($this->getAll() as $question) {
             $result = $results->where('id', $question->id)->first();
             if (!$result) {
@@ -73,9 +83,6 @@ class QuestionRepository
                 ]);
             }
         }
-        $queries = DB::getQueryLog();
-
-        var_dump($queries);
 
         return $errors;
     }

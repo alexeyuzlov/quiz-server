@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\DataAccess\QuestionRepository;
+use App\Http\Requests\PagingRequest;
 use App\Http\Requests\StoreQuestion;
 use App\Models\Question;
+use App\PagingModel;
 use App\Response;
 use Illuminate\Http\JsonResponse;
 
@@ -20,9 +22,13 @@ class QuestionController extends Controller
         $this->questions = $questions;
     }
 
-    public function index()
+    public function search(PagingRequest $request)
     {
-        return Response::success($this->questions->getAll());
+        $pageModel = new PagingModel($request->validated());
+
+        $response = $this->questions->search($pageModel);
+
+        return Response::success($response);
     }
 
     /**

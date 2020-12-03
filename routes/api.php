@@ -19,7 +19,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
-    Route::apiResource('questions', QuestionController::class);
+    Route::apiResource('questions', QuestionController::class, [
+        'except' => ['index']
+    ]);
+
+    Route::get('questions', [QuestionController::class, 'search']);
 });
 
 Route::group(['prefix' => 'public'], function () {
