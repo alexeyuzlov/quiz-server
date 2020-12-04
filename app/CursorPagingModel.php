@@ -5,15 +5,18 @@ namespace App;
 class CursorPagingModel
 {
     /**
-     * @var int
+     * @var CursorModel
      */
-    public $lastValue;
+    public $cursor;
 
     /**
      * @var int
      */
     public $pageSize;
 
+    /**
+     * @var SortModel
+     */
     public $sort;
 
     public function __construct($request)
@@ -22,8 +25,32 @@ class CursorPagingModel
 
         $this->pageSize = $request['pageSize'] ?? 10;
 
-        if (isset($request['lastValue'])) {
-            $this->lastValue = $request['lastValue'];
+        if (isset($request['cursor'])) {
+            $this->cursor = new CursorModel($request['cursor']);
         }
+    }
+
+    public function toResponse($response)
+    {
+        $model = null;
+
+        if (empty($response)) {
+            $model = null;
+        } else if (count($response) <= $this->pageSize) {
+            $model = null;
+        } else $model = array_pop($response);
+
+        return [
+            'cursor' => $model ? $this->toCursor($model) : null,
+            'data' => $response,
+        ];
+    }
+
+    public function toCursor($model)
+    {
+        return new CursorModel([
+            'nextId' => $model['id'],
+            'nextValue' => $model[$this->sort->field]
+        ]);
     }
 }

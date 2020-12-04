@@ -14,11 +14,13 @@ class CursorPagingRequest extends BaseRequest
     public function rules()
     {
         return [
+            'pageSize' => 'integer|min:1',
+
             'sort' => 'nullable',
             'sort.field' => [Rule::in('id', 'created_at', 'updated_at')],
             'sort.asc' => 'boolean',
-            'lastValue' => 'nullable',
-            'pageSize' => 'integer|min:1',
+
+            'cursor' => 'nullable'
         ];
     }
 }

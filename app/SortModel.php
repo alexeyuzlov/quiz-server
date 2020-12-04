@@ -29,4 +29,8 @@ class SortModel
     public function direction() {
         return $this->asc ? 'asc' : 'desc';
     }
+
+    public function inverseDirection() {
+        return $this->asc ? 'desc' : 'asc';
+    }
 }

@@ -14,13 +14,24 @@ class ArticleRepository
             ::orderBy($model->sort->field, $model->sort->direction())
             ->orderBy('id', $model->sort->direction());
 
-        if (isset($model->lastValue)) {
-            $request->where($model->sort->field, '>', $model->lastValue);
+        if (isset($model->cursor)) {
+            $operator = $model->sort->asc ? '>' : '<';
+
+            $request
+                ->where($model->sort->field, $operator, $model->cursor->nextValue)
+                ->orWhere(function ($query) use ($model, $operator) {
+                    $query
+                        ->where($model->sort->field, '=', $model->cursor->nextValue)
+                        ->where('id', $operator . '=', $model->cursor->nextId);
+                });
         }
 
-        return $request
-            ->limit($model->pageSize)
-            ->get();
+        $result = $request
+            ->limit($model->pageSize + 1)
+            ->get()
+            ->toArray();
+
+        return $model->toResponse($result);
     }
 
     public function create($body): Article
