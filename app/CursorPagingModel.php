@@ -42,7 +42,7 @@ class CursorPagingModel
 
         return [
             'cursor' => $model ? $this->toCursor($model) : null,
-            'data' => $response,
+            'data' => $this->sort->asc ? $response : array_reverse($response),
         ];
     }
 
