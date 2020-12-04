@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Answer;
+use App\Models\Article;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -16,6 +17,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        User::factory(1)
+            ->has(Article::factory(100))
+            ->create();
+
         User::factory(2)
             ->create();
 

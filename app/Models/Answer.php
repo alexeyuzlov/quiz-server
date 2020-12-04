@@ -30,11 +30,6 @@ class Answer extends Model
 {
     use HasFactory;
 
-    public function question()
-    {
-        return $this->belongsTo('App\Models\Question');
-    }
-
     protected $attributes = [
         'correct' => false
     ];
@@ -51,4 +46,9 @@ class Answer extends Model
     protected $casts = [
         'correct' => 'boolean'
     ];
+
+    public function question()
+    {
+        return $this->belongsTo('App\Models\Question');
+    }
 }

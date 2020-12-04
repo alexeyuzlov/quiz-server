@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-class PagingRequest extends BaseRequest
+class ArticleRequest extends BaseRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -12,8 +12,8 @@ class PagingRequest extends BaseRequest
     public function rules()
     {
         return [
-            'page' => 'integer|min:1',
-            'pageSize' => 'integer|min:1'
+            'title' => 'required|max:255',
+            'text' => 'required|min:1|max:4095',
         ];
     }
 }

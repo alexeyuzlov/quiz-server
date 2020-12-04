@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MailController;
@@ -23,12 +24,18 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         'except' => ['index']
     ]);
 
+    Route::apiResource('articles', ArticleController::class, [
+        'except' => ['index']
+    ]);
+
     Route::get('questions', [QuestionController::class, 'search']);
 });
 
 Route::group(['prefix' => 'public'], function () {
     Route::post('mail/send', [MailController::class, 'send']);
     Route::post('login', [LoginController::class, 'login']);
+
+    Route::post('articles/search', [ArticleController::class, 'search']);
 
     Route::get('quiz', [QuizController::class, 'index']);
     Route::post('quiz', [QuizController::class, 'check']);

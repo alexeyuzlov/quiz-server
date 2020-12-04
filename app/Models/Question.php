@@ -29,15 +29,15 @@ class Question extends Model
 {
     use HasFactory;
 
-    public function answers()
-    {
-        return $this->hasMany('App\Models\Answer');
-    }
-
     protected $guarded = [];
 
     protected $hidden = [
         'created_at',
         'updated_at'
     ];
+
+    public function answers()
+    {
+        return $this->hasMany('App\Models\Answer');
+    }
 }
